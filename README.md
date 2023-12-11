@@ -597,4 +597,8 @@ statefulset.apps/alertmanager-monitoring-kube-prometheus-alertmanager   1/1     
 statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     26m
 ````
 ![intro](https://github.com/Atlipoka/app/blob/main/screen/intro.png)
-![dscribe](https://github.com/Atlipoka/app/blob/main/screen/describe.png)
+![describe](https://github.com/Atlipoka/app/blob/main/screen/describe.png)
+![image](https://github.com/Atlipoka/app/blob/main/screen/image.png)
+![grafana1](https://github.com/Atlipoka/app/blob/main/screen/grafana1.png)
+![grafana2](https://github.com/Atlipoka/app/blob/main/screen/grafana2.png)
+![grafana3](https://github.com/Atlipoka/app/blob/main/screen/grafana3.png)
