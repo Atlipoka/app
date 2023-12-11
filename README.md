@@ -478,5 +478,49 @@ kube-system   replicaset.apps/metrics-server-6f485d9c99       1         1       
 3. Для создания приложения и системы мониторинга в k8s ипользовал Helm, созданы два репозитория ``application/`` - для приложения и ``kube-prometheus-stack/`` - для настройки мониторинга (взято по ссылке https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack).
 4. Создаем регистри, собиреам необходимый образ и грузим его в регистри, создаем с помощью Helm два неймспейса application и monitoring, деплоим в эти неймспейсы необходимые объекты и проверям работу нашего приложения через веб:
 ````
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ cat key.json | sudo docker login \
+> --username json_key \
+> --password-stdin \
+> cr.yandex/crpklmpvk1ob1hk3mvj7
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ sudo docker build -f nginx.Dockerfile --no-cache -t cr.yandex/crpklmpvk1ob1hk3mvj7/app:1.0.0 .
+[+] Building 13.3s (10/10) FINISHED                                                                                                                                             docker:default
+ => [internal] load build definition from nginx.Dockerfile                                                                                                                                0.7s
+ => => transferring dockerfile: 307B                                                                                                                                                      0.2s
+ => [internal] load .dockerignore                                                                                                                                                         0.5s
+ => => transferring context: 2B                                                                                                                                                           0.0s
+ => [internal] load metadata for docker.io/library/nginx:latest                                                                                                                           2.5s
+ => CACHED [1/5] FROM docker.io/library/nginx:latest@sha256:10d1f5b58f74683ad34eb29287e07dab1e90f10af243f151bb50aa5dbb4d62ee                                                              0.1s
+ => [internal] load build context                                                                                                                                                         0.2s
+ => => transferring context: 2.84kB                                                                                                                                                       0.1s
+ => [2/5] COPY ./pages/intro/intro.html /var/www/html/intro/intro.html                                                                                                                    2.3s
+ => [3/5] COPY ./pages/describe/desc.html /var/www/html/describe/desc.html                                                                                                                1.5s
+ => [4/5] COPY ./pages/image/dev.jpg /var/www/html/image/dev.jpg                                                                                                                          1.6s
+ => [5/5] COPY ./default.conf /etc/nginx/conf.d/default.conf                                                                                                                              1.4s
+ => exporting to image                                                                                                                                                                    1.4s
+ => => exporting layers                                                                                                                                                                   1.3s
+ => => writing image sha256:c44340336368d17173e5dda8812c178ff534bd28c94fa2f5bb07b2edaaacb302                                                                                              0.1s
+ => => naming to cr.yandex/crpklmpvk1ob1hk3mvj7/app:1.0.0                                                                                                                                 0.0s
+
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ sudo docker push cr.yandex/crpklmpvk1ob1hk3mvj7/app:1.0.0
+The push refers to repository [cr.yandex/crpklmpvk1ob1hk3mvj7/app]
+7171f9e16b2c: Pushed
+6a527c5ffde1: Pushed
+e19910c6ccf6: Pushed
+81b60c681371: Pushed
+0d0e9c83b6f7: Pushed
+cddc309885a2: Pushed
+c2d3ab485d1b: Pushed
+66283570f41b: Pushed
+f5525891d9e9: Pushed
+8ae474e0cc8f: Pushed
+92770f546e06: Pushed
+1.0.0: digest: sha256:fb7184a7f213574e57b3e551e04afdc029e13bdf143be7e8833f3f71552836cb size: 2610
+
 
 ````
