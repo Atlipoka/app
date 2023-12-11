@@ -9,7 +9,10 @@
 5. Небольшое примечание. Я использовал файл ``vars.tf`` для получения информации об уже созданных ресурсах, например у меня уже был создан сервисный аккаунт ``terraform``, который я использовал на предыдущих заданиях. Поэтому, если  у вас нет аккуанта, то добавьте файл ``vars.tf`` в ``.terraformignore`` или закомментируйте в нем строчку с получением данных о сервисном аккаунте.
 6. В результате при выполнении комманд ``terraform apply --auto-approve`` или ``terraform destroy --auto-approve`` инфраструктура разворачивается без проблем, результаты:
 ````
-vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ terraform apply --auto-approve
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ terraform validate
+Success! The configuration is valid.
+
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ terraform plan
 data.yandex_iam_service_account.sa: Reading...
 data.yandex_iam_service_account.sa: Read complete after 1s [id=ajereg9535ct9lmk2cg2]
 
@@ -17,15 +20,6 @@ Terraform used the selected providers to generate the following execution plan. 
   + create
 
 Terraform will perform the following actions:
-
-  # yandex_container_registry.default will be created
-  + resource "yandex_container_registry" "default" {
-      + created_at = (known after apply)
-      + folder_id  = "b1gjjlp1h6jc8jeaclal"
-      + id         = (known after apply)
-      + name       = "registry"
-      + status     = (known after apply)
-    }
 
   # yandex_iam_service_account.sa will be created
   + resource "yandex_iam_service_account" "sa" {
@@ -57,150 +51,6 @@ Terraform will perform the following actions:
       + name                = "kms"
       + rotated_at          = (known after apply)
       + status              = (known after apply)
-    }
-
-  # yandex_kubernetes_cluster.k8s-regional will be created
-  + resource "yandex_kubernetes_cluster" "k8s-regional" {
-      + cluster_ipv4_range       = (known after apply)
-      + cluster_ipv6_range       = (known after apply)
-      + created_at               = (known after apply)
-      + description              = (known after apply)
-      + folder_id                = (known after apply)
-      + health                   = (known after apply)
-      + id                       = (known after apply)
-      + labels                   = (known after apply)
-      + log_group_id             = (known after apply)
-      + name                     = "k8s-regional"
-      + network_id               = (known after apply)
-      + node_ipv4_cidr_mask_size = 24
-      + node_service_account_id  = "ajereg9535ct9lmk2cg2"
-      + release_channel          = (known after apply)
-      + service_account_id       = "ajereg9535ct9lmk2cg2"
-      + service_ipv4_range       = (known after apply)
-      + service_ipv6_range       = (known after apply)
-      + status                   = (known after apply)
-
-      + kms_provider {
-          + key_id = (known after apply)
-        }
-
-      + master {
-          + cluster_ca_certificate = (known after apply)
-          + etcd_cluster_size      = (known after apply)
-          + external_v4_address    = (known after apply)
-          + external_v4_endpoint   = (known after apply)
-          + external_v6_endpoint   = (known after apply)
-          + internal_v4_address    = (known after apply)
-          + internal_v4_endpoint   = (known after apply)
-          + public_ip              = true
-          + version                = "1.27"
-          + version_info           = (known after apply)
-
-          + maintenance_policy {
-              + auto_upgrade = true
-
-              + maintenance_window {
-                  + day        = "Wednesday"
-                  + duration   = "3h"
-                  + start_time = "23:00"
-                }
-            }
-
-          + regional {
-              + region = "ru-central1"
-
-              + location {
-                  + subnet_id = (known after apply)
-                  + zone      = "ru-central1-a"
-                }
-              + location {
-                  + subnet_id = (known after apply)
-                  + zone      = "ru-central1-b"
-                }
-              + location {
-                  + subnet_id = (known after apply)
-                  + zone      = "ru-central1-c"
-                }
-            }
-        }
-    }
-
-  # yandex_kubernetes_node_group.pods_group will be created
-  + resource "yandex_kubernetes_node_group" "pods_group" {
-      + cluster_id        = (known after apply)
-      + created_at        = (known after apply)
-      + description       = (known after apply)
-      + id                = (known after apply)
-      + instance_group_id = (known after apply)
-      + labels            = (known after apply)
-      + name              = "netology"
-      + status            = (known after apply)
-      + version           = "1.27"
-      + version_info      = (known after apply)
-
-      + allocation_policy {
-          + location {
-              + subnet_id = (known after apply)
-              + zone      = "ru-central1-a"
-            }
-        }
-
-      + instance_template {
-          + metadata                  = {
-              + "ssh-keys" = <<-EOT
-                    ubuntu:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDC55kDGsJTONGl4TJ8i4Jskl7L15+8PPqT72sLe5DdMT8xW6oB6tnhU3t1GJxmgyJ/aW3ZciT12AVovQHq2PagLqtYuSqaWAlPG1S3JguQENHEibeqchY8CQxwCybcteNAcKF5/UtLkypddk7YYnAm42gjSna2gfvGk2bwe+fODfhYQqmfO0VsLm48nJDn+t3weNt7cBkc6VGlU77K5DLt7TkmDd95v7La0cmmZC2VMpEGPG7MqGJ1hyuAeXW0NopREFO1EuuwMajtC8wjK5ewXL28uXYYl+gIMzFp7Z6w7FtZhR6y9I9PQBsOrvrEdKR1hYOxA2clf2L5d3e3j/Enm5BBESLH0gbWJ7Douf+Mm89CHKJp0SHISxq0EMv4RsMQIYHYfjyl3Uq22dXyysBqOUOeIDJ8PGRzRaALXa9XFRX3K4BxLgd/kvHGGM0t0HHb4SQKelTUvbHtFWtDIC+tp9Q8MejWApr/9jXCCEn2AWatn0LWmnRtKUJpTqcazlU= vagrant@vagrant
-                EOT
-            }
-          + nat                       = (known after apply)
-          + network_acceleration_type = (known after apply)
-          + platform_id               = "standard-v3"
-
-          + boot_disk {
-              + size = 30
-              + type = "network-hdd"
-            }
-
-          + container_runtime {
-              + type = "containerd"
-            }
-
-          + network_interface {
-              + ipv4       = true
-              + ipv6       = (known after apply)
-              + nat        = true
-              + subnet_ids = (known after apply)
-            }
-
-          + resources {
-              + core_fraction = 20
-              + cores         = 2
-              + gpus          = 0
-              + memory        = 2
-            }
-
-          + scheduling_policy {
-              + preemptible = true
-            }
-        }
-
-      + maintenance_policy {
-          + auto_repair  = true
-          + auto_upgrade = true
-
-          + maintenance_window {
-              + day        = "Wednesday"
-              + duration   = "3h"
-              + start_time = "15:00"
-            }
-        }
-
-      + scale_policy {
-          + auto_scale {
-              + initial = 3
-              + max     = 6
-              + min     = 2
-            }
-        }
     }
 
   # yandex_resourcemanager_folder_iam_member.admin-account-iam will be created
@@ -291,14 +141,287 @@ Terraform will perform the following actions:
       + zone           = "ru-central1-c"
     }
 
-Plan: 12 to add, 0 to change, 0 to destroy.
+Plan: 9 to add, 0 to change, 0 to destroy.
+
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ terraform apply --auto-approve
+data.yandex_iam_service_account.sa: Reading...
+data.yandex_iam_service_account.sa: Read complete after 2s [id=ajereg9535ct9lmk2cg2]
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # yandex_iam_service_account_static_access_key.sa-static-key will be created
+  + resource "yandex_iam_service_account_static_access_key" "sa-static-key" {
+      + access_key           = (known after apply)
+      + created_at           = (known after apply)
+      + encrypted_secret_key = (known after apply)
+      + id                   = (known after apply)
+      + key_fingerprint      = (known after apply)
+      + secret_key           = (sensitive value)
+      + service_account_id   = "ajereg9535ct9lmk2cg2"
+    }
+
+  # yandex_kms_symmetric_key.kms will be created
+  + resource "yandex_kms_symmetric_key" "kms" {
+      + created_at          = (known after apply)
+      + default_algorithm   = "AES_128"
+      + deletion_protection = false
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + name                = "kms"
+      + rotated_at          = (known after apply)
+      + status              = (known after apply)
+    }
+
+  # yandex_storage_bucket.kabaev-bucket will be created
+  + resource "yandex_storage_bucket" "kabaev-bucket" {
+      + access_key            = (known after apply)
+      + acl                   = "public-read-write"
+      + bucket                = "kabaev-bucket"
+      + bucket_domain_name    = (known after apply)
+      + default_storage_class = (known after apply)
+      + folder_id             = (known after apply)
+      + force_destroy         = false
+      + id                    = (known after apply)
+      + secret_key            = (sensitive value)
+      + website_domain        = (known after apply)
+      + website_endpoint      = (known after apply)
+
+      + server_side_encryption_configuration {
+          + rule {
+              + apply_server_side_encryption_by_default {
+                  + kms_master_key_id = (known after apply)
+                  + sse_algorithm     = "aws:kms"
+                }
+            }
+        }
+    }
+
+  # yandex_vpc_network.network will be created
+  + resource "yandex_vpc_network" "network" {
+      + created_at                = (known after apply)
+      + default_security_group_id = (known after apply)
+      + folder_id                 = (known after apply)
+      + id                        = (known after apply)
+      + labels                    = (known after apply)
+      + name                      = "network"
+      + subnet_ids                = (known after apply)
+    }
+
+  # yandex_vpc_subnet.subnet1 will be created
+  + resource "yandex_vpc_subnet" "subnet1" {
+      + created_at     = (known after apply)
+      + folder_id      = (known after apply)
+      + id             = (known after apply)
+      + labels         = (known after apply)
+      + name           = "subnet1"
+      + network_id     = (known after apply)
+      + v4_cidr_blocks = [
+          + "10.1.0.0/16",
+        ]
+      + v6_cidr_blocks = (known after apply)
+      + zone           = "ru-central1-a"
+    }
+
+  # yandex_vpc_subnet.subnet2 will be created
+  + resource "yandex_vpc_subnet" "subnet2" {
+      + created_at     = (known after apply)
+      + folder_id      = (known after apply)
+      + id             = (known after apply)
+      + labels         = (known after apply)
+      + name           = "subnet2"
+      + network_id     = (known after apply)
+      + v4_cidr_blocks = [
+          + "10.2.0.0/16",
+        ]
+      + v6_cidr_blocks = (known after apply)
+      + zone           = "ru-central1-b"
+    }
+
+  # yandex_vpc_subnet.subnet3 will be created
+  + resource "yandex_vpc_subnet" "subnet3" {
+      + created_at     = (known after apply)
+      + folder_id      = (known after apply)
+      + id             = (known after apply)
+      + labels         = (known after apply)
+      + name           = "subnet3"
+      + network_id     = (known after apply)
+      + v4_cidr_blocks = [
+          + "10.3.0.0/16",
+        ]
+      + v6_cidr_blocks = (known after apply)
+      + zone           = "ru-central1-c"
+    }
+
+Plan: 7 to add, 0 to change, 0 to destroy.
+yandex_kms_symmetric_key.kms: Creating...
 yandex_vpc_network.network: Creating...
 yandex_iam_service_account_static_access_key.sa-static-key: Creating...
-yandex_kms_symmetric_key.kms: Creating...
-yandex_iam_service_account.sa: Creating...
-yandex_resourcemanager_folder_iam_member.admin-account-iam: Creating...
-yandex_container_registry.default: Creating...
+yandex_kms_symmetric_key.kms: Creation complete after 1s [id=abjmho1mbend1k1usgum]
+yandex_iam_service_account_static_access_key.sa-static-key: Creation complete after 2s [id=aje94pcfprdpnodi3t5t]
+yandex_storage_bucket.kabaev-bucket: Creating...
+yandex_vpc_network.network: Creation complete after 2s [id=enph4jbqnppnloadrbdl]
+yandex_vpc_subnet.subnet3: Creating...
+yandex_vpc_subnet.subnet2: Creating...
+yandex_vpc_subnet.subnet1: Creating...
+yandex_vpc_subnet.subnet1: Creation complete after 0s [id=e9bd1stlmceo035b096b]
+yandex_vpc_subnet.subnet2: Creation complete after 1s [id=e2lnfa473f80ijafh9j2]
+yandex_storage_bucket.kabaev-bucket: Creation complete after 3s [id=kabaev-bucket]
+yandex_vpc_subnet.subnet3: Creation complete after 3s [id=b0c72fvreepj6pthrhoq]
 
+Apply complete! Resources: 7 added, 0 changed, 0 destroyed.
+
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ terraform destroy --auto-approve
+yandex_vpc_network.network: Refreshing state... [id=enph4jbqnppnloadrbdl]
+data.yandex_iam_service_account.sa: Reading...
+yandex_kms_symmetric_key.kms: Refreshing state... [id=abjmho1mbend1k1usgum]
+data.yandex_iam_service_account.sa: Read complete after 0s [id=ajereg9535ct9lmk2cg2]
+yandex_iam_service_account_static_access_key.sa-static-key: Refreshing state... [id=aje94pcfprdpnodi3t5t]
+yandex_vpc_subnet.subnet2: Refreshing state... [id=e2lnfa473f80ijafh9j2]
+yandex_vpc_subnet.subnet1: Refreshing state... [id=e9bd1stlmceo035b096b]
+yandex_vpc_subnet.subnet3: Refreshing state... [id=b0c72fvreepj6pthrhoq]
+yandex_storage_bucket.kabaev-bucket: Refreshing state... [id=kabaev-bucket]
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # yandex_iam_service_account_static_access_key.sa-static-key will be destroyed
+  - resource "yandex_iam_service_account_static_access_key" "sa-static-key" {
+      - access_key         = "YCAJEaICcgZXZYHuOhxd6-1p5" -> null
+      - created_at         = "2023-12-11T13:10:33Z" -> null
+      - id                 = "aje94pcfprdpnodi3t5t" -> null
+      - secret_key         = (sensitive value) -> null
+      - service_account_id = "ajereg9535ct9lmk2cg2" -> null
+    }
+
+  # yandex_kms_symmetric_key.kms will be destroyed
+  - resource "yandex_kms_symmetric_key" "kms" {
+      - created_at          = "2023-12-11T13:10:33Z" -> null
+      - default_algorithm   = "AES_128" -> null
+      - deletion_protection = false -> null
+      - folder_id           = "b1gjjlp1h6jc8jeaclal" -> null
+      - id                  = "abjmho1mbend1k1usgum" -> null
+      - labels              = {} -> null
+      - name                = "kms" -> null
+      - status              = "active" -> null
+    }
+
+  # yandex_storage_bucket.kabaev-bucket will be destroyed
+  - resource "yandex_storage_bucket" "kabaev-bucket" {
+      - access_key            = "YCAJEaICcgZXZYHuOhxd6-1p5" -> null
+      - acl                   = "public-read-write" -> null
+      - bucket                = "kabaev-bucket" -> null
+      - bucket_domain_name    = "kabaev-bucket.storage.yandexcloud.net" -> null
+      - default_storage_class = "STANDARD" -> null
+      - folder_id             = "b1gjjlp1h6jc8jeaclal" -> null
+      - force_destroy         = false -> null
+      - id                    = "kabaev-bucket" -> null
+      - max_size              = 0 -> null
+      - secret_key            = (sensitive value) -> null
+      - tags                  = {} -> null
+
+      - anonymous_access_flags {
+          - config_read = true -> null
+          - list        = true -> null
+          - read        = true -> null
+        }
+
+      - server_side_encryption_configuration {
+          - rule {
+              - apply_server_side_encryption_by_default {
+                  - kms_master_key_id = "abjmho1mbend1k1usgum" -> null
+                  - sse_algorithm     = "aws:kms" -> null
+                }
+            }
+        }
+
+      - versioning {
+          - enabled = false -> null
+        }
+    }
+
+  # yandex_vpc_network.network will be destroyed
+  - resource "yandex_vpc_network" "network" {
+      - created_at                = "2023-12-11T13:10:33Z" -> null
+      - default_security_group_id = "enpc42gr974hrh77p615" -> null
+      - folder_id                 = "b1gjjlp1h6jc8jeaclal" -> null
+      - id                        = "enph4jbqnppnloadrbdl" -> null
+      - labels                    = {} -> null
+      - name                      = "network" -> null
+      - subnet_ids                = [
+          - "b0c72fvreepj6pthrhoq",
+          - "e2lnfa473f80ijafh9j2",
+          - "e9bd1stlmceo035b096b",
+        ] -> null
+    }
+
+  # yandex_vpc_subnet.subnet1 will be destroyed
+  - resource "yandex_vpc_subnet" "subnet1" {
+      - created_at     = "2023-12-11T13:10:36Z" -> null
+      - folder_id      = "b1gjjlp1h6jc8jeaclal" -> null
+      - id             = "e9bd1stlmceo035b096b" -> null
+      - labels         = {} -> null
+      - name           = "subnet1" -> null
+      - network_id     = "enph4jbqnppnloadrbdl" -> null
+      - v4_cidr_blocks = [
+          - "10.1.0.0/16",
+        ] -> null
+      - v6_cidr_blocks = [] -> null
+      - zone           = "ru-central1-a" -> null
+    }
+
+  # yandex_vpc_subnet.subnet2 will be destroyed
+  - resource "yandex_vpc_subnet" "subnet2" {
+      - created_at     = "2023-12-11T13:10:36Z" -> null
+      - folder_id      = "b1gjjlp1h6jc8jeaclal" -> null
+      - id             = "e2lnfa473f80ijafh9j2" -> null
+      - labels         = {} -> null
+      - name           = "subnet2" -> null
+      - network_id     = "enph4jbqnppnloadrbdl" -> null
+      - v4_cidr_blocks = [
+          - "10.2.0.0/16",
+        ] -> null
+      - v6_cidr_blocks = [] -> null
+      - zone           = "ru-central1-b" -> null
+    }
+
+  # yandex_vpc_subnet.subnet3 will be destroyed
+  - resource "yandex_vpc_subnet" "subnet3" {
+      - created_at     = "2023-12-11T13:10:37Z" -> null
+      - folder_id      = "b1gjjlp1h6jc8jeaclal" -> null
+      - id             = "b0c72fvreepj6pthrhoq" -> null
+      - labels         = {} -> null
+      - name           = "subnet3" -> null
+      - network_id     = "enph4jbqnppnloadrbdl" -> null
+      - v4_cidr_blocks = [
+          - "10.3.0.0/16",
+        ] -> null
+      - v6_cidr_blocks = [] -> null
+      - zone           = "ru-central1-c" -> null
+    }
+
+Plan: 0 to add, 0 to change, 7 to destroy.
+yandex_vpc_subnet.subnet1: Destroying... [id=e9bd1stlmceo035b096b]
+yandex_vpc_subnet.subnet2: Destroying... [id=e2lnfa473f80ijafh9j2]
+yandex_storage_bucket.kabaev-bucket: Destroying... [id=kabaev-bucket]
+yandex_vpc_subnet.subnet3: Destroying... [id=b0c72fvreepj6pthrhoq]
+yandex_vpc_subnet.subnet3: Destruction complete after 0s
+yandex_vpc_subnet.subnet1: Destruction complete after 1s
+yandex_vpc_subnet.subnet2: Destruction complete after 2s
+yandex_vpc_network.network: Destroying... [id=enph4jbqnppnloadrbdl]
+yandex_vpc_network.network: Destruction complete after 0s
+yandex_storage_bucket.kabaev-bucket: Still destroying... [id=kabaev-bucket, 10s elapsed]
+yandex_storage_bucket.kabaev-bucket: Destruction complete after 11s
+yandex_kms_symmetric_key.kms: Destroying... [id=abjmho1mbend1k1usgum]
+yandex_iam_service_account_static_access_key.sa-static-key: Destroying... [id=aje94pcfprdpnodi3t5t]
+yandex_iam_service_account_static_access_key.sa-static-key: Destruction complete after 0s
+yandex_kms_symmetric_key.kms: Destruction complete after 0s
+
+Destroy complete! Resources: 7 destroyed.
 ````
 
 ## 2. Создание Kubernetes кластера
