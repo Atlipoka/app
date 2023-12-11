@@ -306,4 +306,46 @@ yandex_container_registry.default: Creating...
 1. Использовал альтернативный вариант создания k8s кластера. Файл создающий региональный кластер размещенный в 3-х разных подсетях - ``k8s-cluster.tf``, ключ создавали в предыдущем разделе, см Подготовка облака для начала работы. п2.
 2. Группа нод для k8s с автоматическим маштабированием - ``k8s-nodes.tf``.
 3. После создания кластера в вебе получаем информацию как загрузить конфиг кластера, пример комманды ``yc managed-kubernetes cluster get-credentials --id catub9ieiqirticm8ps7 --external
-``.
+``. Проверяем работу кластера:
+````
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ kubectl get all -A
+NAMESPACE     NAME                                      READY   STATUS    RESTARTS   AGE
+kube-system   pod/coredns-67964c577c-dcm4v              1/1     Running   0          95m
+kube-system   pod/coredns-67964c577c-ml9x8              1/1     Running   0          99m
+kube-system   pod/ip-masq-agent-2rb4k                   1/1     Running   0          96m
+kube-system   pod/ip-masq-agent-2vstm                   1/1     Running   0          96m
+kube-system   pod/kube-dns-autoscaler-bd7cc5977-b7fhn   1/1     Running   0          99m
+kube-system   pod/kube-proxy-8m5gl                      1/1     Running   0          96m
+kube-system   pod/kube-proxy-k89xt                      1/1     Running   0          96m
+kube-system   pod/metrics-server-6f485d9c99-mp9k9       2/2     Running   0          95m
+kube-system   pod/npd-v0.8.0-8rg7p                      1/1     Running   0          96m
+kube-system   pod/npd-v0.8.0-zdft8                      1/1     Running   0          96m
+kube-system   pod/yc-disk-csi-node-v2-972sb             6/6     Running   0          96m
+kube-system   pod/yc-disk-csi-node-v2-sckx4             6/6     Running   0          96m
+
+NAMESPACE     NAME                     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
+default       service/kubernetes       ClusterIP   10.96.128.1     <none>        443/TCP                  99m
+kube-system   service/kube-dns         ClusterIP   10.96.128.2     <none>        53/UDP,53/TCP,9153/TCP   99m
+kube-system   service/metrics-server   ClusterIP   10.96.248.189   <none>        443/TCP                  99m
+
+NAMESPACE     NAME                                            DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                                                                        AGE
+kube-system   daemonset.apps/ip-masq-agent                    2         2         2       2            2           beta.kubernetes.io/os=linux,node.kubernetes.io/masq-agent-ds-ready=true              99m
+kube-system   daemonset.apps/kube-proxy                       2         2         2       2            2           kubernetes.io/os=linux,node.kubernetes.io/kube-proxy-ds-ready=true                   99m
+kube-system   daemonset.apps/npd-v0.8.0                       2         2         2       2            2           beta.kubernetes.io/os=linux,node.kubernetes.io/node-problem-detector-ds-ready=true   99m
+kube-system   daemonset.apps/nvidia-device-plugin-daemonset   0         0         0       0            0           beta.kubernetes.io/os=linux,node.kubernetes.io/nvidia-device-plugin-ds-ready=true    99m
+kube-system   daemonset.apps/yc-disk-csi-node                 0         0         0       0            0           <none>                                                                               99m
+kube-system   daemonset.apps/yc-disk-csi-node-v2              2         2         2       2            2           yandex.cloud/pci-topology=k8s                                                        99m
+
+NAMESPACE     NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system   deployment.apps/coredns               2/2     2            2           99m
+kube-system   deployment.apps/kube-dns-autoscaler   1/1     1            1           99m
+kube-system   deployment.apps/metrics-server        1/1     1            1           99m
+
+NAMESPACE     NAME                                            DESIRED   CURRENT   READY   AGE
+kube-system   replicaset.apps/coredns-67964c577c              2         2         2       99m
+kube-system   replicaset.apps/kube-dns-autoscaler-bd7cc5977   1         1         1       99m
+kube-system   replicaset.apps/metrics-server-54cb698b7f       0         0         0       99m
+kube-system   replicaset.apps/metrics-server-6f485d9c99       1         1         1       95m
+````
+
+
