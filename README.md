@@ -545,4 +545,55 @@ STATUS: deployed
 REVISION: 1
 TEST SUITE: None
 
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ kubectl get all -n application
+NAME                         READY   STATUS    RESTARTS   AGE
+pod/nginx-85fb4567d6-2fgpv   1/1     Running   0          66s
+pod/nginx-85fb4567d6-g98nc   1/1     Running   0          63s
+
+NAME                TYPE           CLUSTER-IP     EXTERNAL-IP       PORT(S)                      AGE
+service/nginx-svc   LoadBalancer   10.96.190.21   158.160.135.144   80:30731/TCP,443:30619/TCP   67s
+
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/nginx   2/2     2            2           67s
+
+NAME                               DESIRED   CURRENT   READY   AGE
+replicaset.apps/nginx-85fb4567d6   2         2         2       67s
+
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ kubectl get all -n monitoring
+NAME                                                         READY   STATUS    RESTARTS   AGE
+pod/alertmanager-monitoring-kube-prometheus-alertmanager-0   2/2     Running   0          26m
+pod/monitoring-grafana-844f89c759-sw27x                      3/3     Running   0          26m
+pod/monitoring-kube-prometheus-operator-5fbb66b4b-mjhp7      1/1     Running   0          26m
+pod/monitoring-kube-state-metrics-74f4d8858f-v99pl           1/1     Running   0          26m
+pod/monitoring-prometheus-node-exporter-b9npp                1/1     Running   0          26m
+pod/monitoring-prometheus-node-exporter-p9fxj                1/1     Running   0          26m
+pod/prometheus-monitoring-kube-prometheus-prometheus-0       2/2     Running   0          26m
+
+NAME                                              TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+service/alertmanager-operated                     ClusterIP   None            <none>        9093/TCP,9094/TCP,9094/UDP   26m
+service/monitoring-grafana                        ClusterIP   10.96.204.15    <none>        3000/TCP,9094/TCP,9094/UDP   26m
+service/monitoring-kube-prometheus-alertmanager   ClusterIP   10.96.174.148   <none>        9093/TCP,8080/TCP            26m
+service/monitoring-kube-prometheus-operator       ClusterIP   10.96.204.193   <none>        443/TCP                      26m
+service/monitoring-kube-prometheus-prometheus     ClusterIP   10.96.234.107   <none>        9090/TCP,8080/TCP            26m
+service/monitoring-kube-state-metrics             ClusterIP   10.96.255.34    <none>        8080/TCP                     26m
+service/monitoring-prometheus-node-exporter       ClusterIP   10.96.249.245   <none>        9100/TCP                     26m
+service/prometheus-operated                       ClusterIP   None            <none>        9090/TCP                     26m
+
+NAME                                                 DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+daemonset.apps/monitoring-prometheus-node-exporter   2         2         2       2            2           kubernetes.io/os=linux   26m
+
+NAME                                                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/monitoring-grafana                    1/1     1            1           26m
+deployment.apps/monitoring-kube-prometheus-operator   1/1     1            1           26m
+deployment.apps/monitoring-kube-state-metrics         1/1     1            1           26m
+
+NAME                                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/monitoring-grafana-844f89c759                   1         1         1       26m
+replicaset.apps/monitoring-kube-prometheus-operator-5fbb66b4b   1         1         1       26m
+replicaset.apps/monitoring-kube-state-metrics-74f4d8858f        1         1         1       26m
+
+NAME                                                                    READY   AGE
+statefulset.apps/alertmanager-monitoring-kube-prometheus-alertmanager   1/1     26m
+statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     26m
 ````
+* 
