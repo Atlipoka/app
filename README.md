@@ -596,4 +596,4 @@ NAME                                                                    READY   
 statefulset.apps/alertmanager-monitoring-kube-prometheus-alertmanager   1/1     26m
 statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     26m
 ````
-* 
+* ![intro](https://github.com/Atlipoka/app/blob/main/screen/intro.png)
