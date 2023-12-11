@@ -471,4 +471,8 @@ kube-system   replicaset.apps/metrics-server-54cb698b7f       0         0       
 kube-system   replicaset.apps/metrics-server-6f485d9c99       1         1         1       95m
 ````
 
+## 3. Создание тестового приложения
 
+1. Для создания собственного приложения был использован nginx, который по определенному api будет отдавать статическую информацию и доступ к монитоингу кластера k8s. Сборка образа с необходимыми фалами и конфигом - ``nginx.Dockerfile`` и ``default.conf``
+2. Yandex registry, для хранения собранных образов - ``registry.tf``.
+3. Для создания приложения и системы мониторинга в k8s ипользовал Helm, созданы два репозитория ``appliction/`` - для приложения и ``kube-prometheus-stack/`` - для настройки мониторнга (взято по ссылке https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
