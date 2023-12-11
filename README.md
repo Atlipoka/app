@@ -522,5 +522,27 @@ f5525891d9e9: Pushed
 92770f546e06: Pushed
 1.0.0: digest: sha256:fb7184a7f213574e57b3e551e04afdc029e13bdf143be7e8833f3f71552836cb size: 2610
 
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ helm upgrade --install monitoring  --namespace monitoring --create-namespace ./kube-prometheus-stack/
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /home/vagrant/.kube/config
+Release "monitoring" does not exist. Installing it now.
+NAME: monitoring
+LAST DEPLOYED: Mon Dec 11 13:47:36 2023
+NAMESPACE: monitoring
+STATUS: deployed
+REVISION: 1
+NOTES:
+kube-prometheus-stack has been installed. Check its status by running:
+  kubectl --namespace monitoring get pods -l "release=monitoring"
+
+Visit https://github.com/prometheus-operator/kube-prometheus for instructions on how to create & configure Alertmanager and Prometheus instances using the Operator.
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ helm upgrade --install application  --namespace application --create-namespace ./application/
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /home/vagrant/.kube/config
+Release "application" does not exist. Installing it now.
+NAME: application
+LAST DEPLOYED: Mon Dec 11 13:59:10 2023
+NAMESPACE: application
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
 
 ````
