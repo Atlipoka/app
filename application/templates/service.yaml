@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.metadata.name }}-svc
+  labels:
+    {{- toYaml .Values.metadata.labels | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- toYaml .Values.service | nindent 2}}
+  selector:
+    {{- toYaml .Values.metadata.labels | nindent 4 }}

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- with .Values.metadata }}
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+  labels:
+    app: {{ .Values.metadata.labels.app }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.metadata.labels.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.metadata.labels.app }}
+    {{- with .Values.spec }}
+    spec:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 6 }}
+      {{- end }} 
+      restartPolicy: Always
