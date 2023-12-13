@@ -2,202 +2,26 @@
 
 ## 1. Подготовка облака для начала работы.
 
-1. Файл создающий сервисный аккаунт ``terraform`` c правами ``editor`` - ``sa.tf``
-2. S3 бакет, в роли бэкенда и kms ключ для него - ``bucket.tf``,``kms.tf``
-3. Для создания сетей и подсетей - ``network.tf``
-4. В ``provider.tf`` указаны аутентификационные данные для доступа к облаку, папке в облаке, а так-же сервиснуму аккаунту, от имени которого будем производить действия в облаке. Прошу заменить, что для аутентификации я использовал авторизованный ключ, который хранится в файле ``key.json``. Это было сделано для упрощения процесса развертывания инфраструктуры, чтоб постоянно не запрашивать IAM токены, которые имеют срок жизни, по моему, 12 часов...кароче не более суток.
-5. Небольшое примечание. Я использовал файл ``vars.tf`` для получения информации об уже созданных ресурсах, например у меня уже был создан сервисный аккаунт ``terraform``, который я использовал на предыдущих заданиях. Поэтому, если  у вас нет аккуанта, то добавьте файл ``vars.tf`` в ``.terraformignore`` или закомментируйте в нем строчку с получением данных о сервисном аккаунте.
-6. В результате при выполнении комманд ``terraform apply --auto-approve`` или ``terraform destroy --auto-approve`` инфраструктура разворачивается без проблем, результаты:
+1. S3 бакет, в роли бэкенда и kms ключ для него - ``bucket.tf``,``kms.tf``
+2. Настройки провайдера прописаны в ``provider.tf``:
+ * Для аутентификации в облаке от имени сервисного аккаунта использовал авторизованный ключ, который хранится в файле ``key.json``.
+ * При создании backed для хранения состояния, ключи получием из "outputs.tf", чтоб потом из этого файла получить ``access_key`` и ``secret_key`` при инициализации.
+3. Для создания сетей и подсетей - ``network.tf``.
+4. Файл создающий сервисный аккаунт ``terraform`` c правами ``editor`` - ``sa.tf``.
+ * Небольшое примечание. Я использовал файл ``datasource.tf`` для получения информации об уже созданных ресурсах, например у меня уже был создан сервисный аккаунт ``terraform``, который я использовал на предыдущих заданиях. Поэтому, если  у вас нет аккуанта, то закомментируйте в ``datasource.tf`` строчку с получением данных о сервисном аккаунте.
+5. В результате при выполнении комманд ``terraform apply --auto-approve`` или ``terraform destroy --auto-approve`` инфраструктура разворачивается без проблем, результаты:
 ````
-vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ terraform validate
-Success! The configuration is valid.
-
-vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ terraform plan
-data.yandex_iam_service_account.sa: Reading...
-data.yandex_iam_service_account.sa: Read complete after 1s [id=ajereg9535ct9lmk2cg2]
-
-Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
-  + create
-
-Terraform will perform the following actions:
-
-  # yandex_iam_service_account.sa will be created
-  + resource "yandex_iam_service_account" "sa" {
-      + created_at  = (known after apply)
-      + description = "Роль для управления рескрсами в k8s"
-      + folder_id   = "b1gjjlp1h6jc8jeaclal"
-      + id          = (known after apply)
-      + name        = "terraform"
-    }
-
-  # yandex_iam_service_account_static_access_key.sa-static-key will be created
-  + resource "yandex_iam_service_account_static_access_key" "sa-static-key" {
-      + access_key           = (known after apply)
-      + created_at           = (known after apply)
-      + encrypted_secret_key = (known after apply)
-      + id                   = (known after apply)
-      + key_fingerprint      = (known after apply)
-      + secret_key           = (sensitive value)
-      + service_account_id   = "ajereg9535ct9lmk2cg2"
-    }
-
-  # yandex_kms_symmetric_key.kms will be created
-  + resource "yandex_kms_symmetric_key" "kms" {
-      + created_at          = (known after apply)
-      + default_algorithm   = "AES_128"
-      + deletion_protection = false
-      + folder_id           = (known after apply)
-      + id                  = (known after apply)
-      + name                = "kms"
-      + rotated_at          = (known after apply)
-      + status              = (known after apply)
-    }
-
-  # yandex_resourcemanager_folder_iam_member.admin-account-iam will be created
-  + resource "yandex_resourcemanager_folder_iam_member" "admin-account-iam" {
-      + folder_id = "b1gjjlp1h6jc8jeaclal"
-      + id        = (known after apply)
-      + member    = "serviceAccount:yandex_iam_service_account.sa.id"
-      + role      = "eidtor"
-    }
-
-  # yandex_storage_bucket.kabaev-bucket will be created
-  + resource "yandex_storage_bucket" "kabaev-bucket" {
-      + access_key            = (known after apply)
-      + acl                   = "public-read-write"
-      + bucket                = "kabaev-bucket"
-      + bucket_domain_name    = (known after apply)
-      + default_storage_class = (known after apply)
-      + folder_id             = (known after apply)
-      + force_destroy         = false
-      + id                    = (known after apply)
-      + secret_key            = (sensitive value)
-      + website_domain        = (known after apply)
-      + website_endpoint      = (known after apply)
-
-      + server_side_encryption_configuration {
-          + rule {
-              + apply_server_side_encryption_by_default {
-                  + kms_master_key_id = (known after apply)
-                  + sse_algorithm     = "aws:kms"
-                }
-            }
-        }
-    }
-
-  # yandex_vpc_network.network will be created
-  + resource "yandex_vpc_network" "network" {
-      + created_at                = (known after apply)
-      + default_security_group_id = (known after apply)
-      + folder_id                 = (known after apply)
-      + id                        = (known after apply)
-      + labels                    = (known after apply)
-      + name                      = "network"
-      + subnet_ids                = (known after apply)
-    }
-
-  # yandex_vpc_subnet.subnet1 will be created
-  + resource "yandex_vpc_subnet" "subnet1" {
-      + created_at     = (known after apply)
-      + folder_id      = (known after apply)
-      + id             = (known after apply)
-      + labels         = (known after apply)
-      + name           = "subnet1"
-      + network_id     = (known after apply)
-      + v4_cidr_blocks = [
-          + "10.1.0.0/16",
-        ]
-      + v6_cidr_blocks = (known after apply)
-      + zone           = "ru-central1-a"
-    }
-
-  # yandex_vpc_subnet.subnet2 will be created
-  + resource "yandex_vpc_subnet" "subnet2" {
-      + created_at     = (known after apply)
-      + folder_id      = (known after apply)
-      + id             = (known after apply)
-      + labels         = (known after apply)
-      + name           = "subnet2"
-      + network_id     = (known after apply)
-      + v4_cidr_blocks = [
-          + "10.2.0.0/16",
-        ]
-      + v6_cidr_blocks = (known after apply)
-      + zone           = "ru-central1-b"
-    }
-
-  # yandex_vpc_subnet.subnet3 will be created
-  + resource "yandex_vpc_subnet" "subnet3" {
-      + created_at     = (known after apply)
-      + folder_id      = (known after apply)
-      + id             = (known after apply)
-      + labels         = (known after apply)
-      + name           = "subnet3"
-      + network_id     = (known after apply)
-      + v4_cidr_blocks = [
-          + "10.3.0.0/16",
-        ]
-      + v6_cidr_blocks = (known after apply)
-      + zone           = "ru-central1-c"
-    }
-
-Plan: 9 to add, 0 to change, 0 to destroy.
-
 vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ terraform apply --auto-approve
 data.yandex_iam_service_account.sa: Reading...
-data.yandex_iam_service_account.sa: Read complete after 2s [id=ajereg9535ct9lmk2cg2]
+yandex_kms_symmetric_key.kms: Refreshing state... [id=abjcud8geefm39itnnlc]
+data.yandex_iam_service_account.sa: Read complete after 0s [id=ajereg9535ct9lmk2cg2]
+yandex_iam_service_account_static_access_key.sa-static-key: Refreshing state... [id=aje5gh12r8unha8b5pse]
+yandex_storage_bucket.kabaev-bucket: Refreshing state... [id=kabaev-bucket]
 
 Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
   + create
 
 Terraform will perform the following actions:
-
-  # yandex_iam_service_account_static_access_key.sa-static-key will be created
-  + resource "yandex_iam_service_account_static_access_key" "sa-static-key" {
-      + access_key           = (known after apply)
-      + created_at           = (known after apply)
-      + encrypted_secret_key = (known after apply)
-      + id                   = (known after apply)
-      + key_fingerprint      = (known after apply)
-      + secret_key           = (sensitive value)
-      + service_account_id   = "ajereg9535ct9lmk2cg2"
-    }
-
-  # yandex_kms_symmetric_key.kms will be created
-  + resource "yandex_kms_symmetric_key" "kms" {
-      + created_at          = (known after apply)
-      + default_algorithm   = "AES_128"
-      + deletion_protection = false
-      + folder_id           = (known after apply)
-      + id                  = (known after apply)
-      + name                = "kms"
-      + rotated_at          = (known after apply)
-      + status              = (known after apply)
-    }
-
-  # yandex_storage_bucket.kabaev-bucket will be created
-  + resource "yandex_storage_bucket" "kabaev-bucket" {
-      + access_key            = (known after apply)
-      + acl                   = "public-read-write"
-      + bucket                = "kabaev-bucket"
-      + bucket_domain_name    = (known after apply)
-      + default_storage_class = (known after apply)
-      + folder_id             = (known after apply)
-      + force_destroy         = false
-      + id                    = (known after apply)
-      + secret_key            = (sensitive value)
-      + website_domain        = (known after apply)
-      + website_endpoint      = (known after apply)
-
-      + server_side_encryption_configuration {
-          + rule {
-              + apply_server_side_encryption_by_default {
-                  + kms_master_key_id = (known after apply)
-                  + sse_algorithm     = "aws:kms"
-                }
-            }
-        }
-    }
 
   # yandex_vpc_network.network will be created
   + resource "yandex_vpc_network" "network" {
@@ -255,33 +79,32 @@ Terraform will perform the following actions:
       + zone           = "ru-central1-c"
     }
 
-Plan: 7 to add, 0 to change, 0 to destroy.
-yandex_kms_symmetric_key.kms: Creating...
+Plan: 4 to add, 0 to change, 0 to destroy.
 yandex_vpc_network.network: Creating...
-yandex_iam_service_account_static_access_key.sa-static-key: Creating...
-yandex_kms_symmetric_key.kms: Creation complete after 1s [id=abjmho1mbend1k1usgum]
-yandex_iam_service_account_static_access_key.sa-static-key: Creation complete after 2s [id=aje94pcfprdpnodi3t5t]
-yandex_storage_bucket.kabaev-bucket: Creating...
-yandex_vpc_network.network: Creation complete after 2s [id=enph4jbqnppnloadrbdl]
+yandex_vpc_network.network: Creation complete after 1s [id=enpe0ioj2bnk3r267k20]
 yandex_vpc_subnet.subnet3: Creating...
-yandex_vpc_subnet.subnet2: Creating...
 yandex_vpc_subnet.subnet1: Creating...
-yandex_vpc_subnet.subnet1: Creation complete after 0s [id=e9bd1stlmceo035b096b]
-yandex_vpc_subnet.subnet2: Creation complete after 1s [id=e2lnfa473f80ijafh9j2]
-yandex_storage_bucket.kabaev-bucket: Creation complete after 3s [id=kabaev-bucket]
-yandex_vpc_subnet.subnet3: Creation complete after 3s [id=b0c72fvreepj6pthrhoq]
+yandex_vpc_subnet.subnet2: Creating...
+yandex_vpc_subnet.subnet2: Creation complete after 0s [id=e2llm0rnfen6maqd8u6e]
+yandex_vpc_subnet.subnet1: Creation complete after 1s [id=e9b2i3s9keprth3k21cu]
+yandex_vpc_subnet.subnet3: Creation complete after 2s [id=b0cqfo838mlalbbaf4se]
 
-Apply complete! Resources: 7 added, 0 changed, 0 destroyed.
+Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
 
-vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ terraform destroy --auto-approve
-yandex_vpc_network.network: Refreshing state... [id=enph4jbqnppnloadrbdl]
+Outputs:
+
+access_key = <sensitive>
+secret_key = <sensitive>
+
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ terraform destroy
 data.yandex_iam_service_account.sa: Reading...
-yandex_kms_symmetric_key.kms: Refreshing state... [id=abjmho1mbend1k1usgum]
-data.yandex_iam_service_account.sa: Read complete after 0s [id=ajereg9535ct9lmk2cg2]
-yandex_iam_service_account_static_access_key.sa-static-key: Refreshing state... [id=aje94pcfprdpnodi3t5t]
-yandex_vpc_subnet.subnet2: Refreshing state... [id=e2lnfa473f80ijafh9j2]
-yandex_vpc_subnet.subnet1: Refreshing state... [id=e9bd1stlmceo035b096b]
-yandex_vpc_subnet.subnet3: Refreshing state... [id=b0c72fvreepj6pthrhoq]
+yandex_kms_symmetric_key.kms: Refreshing state... [id=abjcud8geefm39itnnlc]
+yandex_vpc_network.network: Refreshing state... [id=enpe0ioj2bnk3r267k20]
+data.yandex_iam_service_account.sa: Read complete after 1s [id=ajereg9535ct9lmk2cg2]
+yandex_iam_service_account_static_access_key.sa-static-key: Refreshing state... [id=aje5gh12r8unha8b5pse]
+yandex_vpc_subnet.subnet3: Refreshing state... [id=b0cqfo838mlalbbaf4se]
+yandex_vpc_subnet.subnet1: Refreshing state... [id=e9b2i3s9keprth3k21cu]
+yandex_vpc_subnet.subnet2: Refreshing state... [id=e2llm0rnfen6maqd8u6e]
 yandex_storage_bucket.kabaev-bucket: Refreshing state... [id=kabaev-bucket]
 
 Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
@@ -291,20 +114,20 @@ Terraform will perform the following actions:
 
   # yandex_iam_service_account_static_access_key.sa-static-key will be destroyed
   - resource "yandex_iam_service_account_static_access_key" "sa-static-key" {
-      - access_key         = "YCAJEaICcgZXZYHuOhxd6-1p5" -> null
-      - created_at         = "2023-12-11T13:10:33Z" -> null
-      - id                 = "aje94pcfprdpnodi3t5t" -> null
+      - access_key         = "YCAJEtZH0pd9yCMvkSfzztUrK" -> null
+      - created_at         = "2023-12-13T10:17:43Z" -> null
+      - id                 = "aje5gh12r8unha8b5pse" -> null
       - secret_key         = (sensitive value) -> null
       - service_account_id = "ajereg9535ct9lmk2cg2" -> null
     }
 
   # yandex_kms_symmetric_key.kms will be destroyed
   - resource "yandex_kms_symmetric_key" "kms" {
-      - created_at          = "2023-12-11T13:10:33Z" -> null
+      - created_at          = "2023-12-13T10:17:43Z" -> null
       - default_algorithm   = "AES_128" -> null
       - deletion_protection = false -> null
       - folder_id           = "b1gjjlp1h6jc8jeaclal" -> null
-      - id                  = "abjmho1mbend1k1usgum" -> null
+      - id                  = "abjcud8geefm39itnnlc" -> null
       - labels              = {} -> null
       - name                = "kms" -> null
       - status              = "active" -> null
@@ -312,7 +135,7 @@ Terraform will perform the following actions:
 
   # yandex_storage_bucket.kabaev-bucket will be destroyed
   - resource "yandex_storage_bucket" "kabaev-bucket" {
-      - access_key            = "YCAJEaICcgZXZYHuOhxd6-1p5" -> null
+      - access_key            = "YCAJEtZH0pd9yCMvkSfzztUrK" -> null
       - acl                   = "public-read-write" -> null
       - bucket                = "kabaev-bucket" -> null
       - bucket_domain_name    = "kabaev-bucket.storage.yandexcloud.net" -> null
@@ -333,7 +156,7 @@ Terraform will perform the following actions:
       - server_side_encryption_configuration {
           - rule {
               - apply_server_side_encryption_by_default {
-                  - kms_master_key_id = "abjmho1mbend1k1usgum" -> null
+                  - kms_master_key_id = "abjcud8geefm39itnnlc" -> null
                   - sse_algorithm     = "aws:kms" -> null
                 }
             }
@@ -346,27 +169,27 @@ Terraform will perform the following actions:
 
   # yandex_vpc_network.network will be destroyed
   - resource "yandex_vpc_network" "network" {
-      - created_at                = "2023-12-11T13:10:33Z" -> null
-      - default_security_group_id = "enpc42gr974hrh77p615" -> null
+      - created_at                = "2023-12-13T11:07:33Z" -> null
+      - default_security_group_id = "enpcob6e69s1a3qkijt1" -> null
       - folder_id                 = "b1gjjlp1h6jc8jeaclal" -> null
-      - id                        = "enph4jbqnppnloadrbdl" -> null
+      - id                        = "enpe0ioj2bnk3r267k20" -> null
       - labels                    = {} -> null
       - name                      = "network" -> null
       - subnet_ids                = [
-          - "b0c72fvreepj6pthrhoq",
-          - "e2lnfa473f80ijafh9j2",
-          - "e9bd1stlmceo035b096b",
+          - "b0cqfo838mlalbbaf4se",
+          - "e2llm0rnfen6maqd8u6e",
+          - "e9b2i3s9keprth3k21cu",
         ] -> null
     }
 
   # yandex_vpc_subnet.subnet1 will be destroyed
   - resource "yandex_vpc_subnet" "subnet1" {
-      - created_at     = "2023-12-11T13:10:36Z" -> null
+      - created_at     = "2023-12-13T11:07:35Z" -> null
       - folder_id      = "b1gjjlp1h6jc8jeaclal" -> null
-      - id             = "e9bd1stlmceo035b096b" -> null
+      - id             = "e9b2i3s9keprth3k21cu" -> null
       - labels         = {} -> null
       - name           = "subnet1" -> null
-      - network_id     = "enph4jbqnppnloadrbdl" -> null
+      - network_id     = "enpe0ioj2bnk3r267k20" -> null
       - v4_cidr_blocks = [
           - "10.1.0.0/16",
         ] -> null
@@ -376,12 +199,12 @@ Terraform will perform the following actions:
 
   # yandex_vpc_subnet.subnet2 will be destroyed
   - resource "yandex_vpc_subnet" "subnet2" {
-      - created_at     = "2023-12-11T13:10:36Z" -> null
+      - created_at     = "2023-12-13T11:07:35Z" -> null
       - folder_id      = "b1gjjlp1h6jc8jeaclal" -> null
-      - id             = "e2lnfa473f80ijafh9j2" -> null
+      - id             = "e2llm0rnfen6maqd8u6e" -> null
       - labels         = {} -> null
       - name           = "subnet2" -> null
-      - network_id     = "enph4jbqnppnloadrbdl" -> null
+      - network_id     = "enpe0ioj2bnk3r267k20" -> null
       - v4_cidr_blocks = [
           - "10.2.0.0/16",
         ] -> null
@@ -391,12 +214,12 @@ Terraform will perform the following actions:
 
   # yandex_vpc_subnet.subnet3 will be destroyed
   - resource "yandex_vpc_subnet" "subnet3" {
-      - created_at     = "2023-12-11T13:10:37Z" -> null
+      - created_at     = "2023-12-13T11:07:36Z" -> null
       - folder_id      = "b1gjjlp1h6jc8jeaclal" -> null
-      - id             = "b0c72fvreepj6pthrhoq" -> null
+      - id             = "b0cqfo838mlalbbaf4se" -> null
       - labels         = {} -> null
       - name           = "subnet3" -> null
-      - network_id     = "enph4jbqnppnloadrbdl" -> null
+      - network_id     = "enpe0ioj2bnk3r267k20" -> null
       - v4_cidr_blocks = [
           - "10.3.0.0/16",
         ] -> null
@@ -405,23 +228,15 @@ Terraform will perform the following actions:
     }
 
 Plan: 0 to add, 0 to change, 7 to destroy.
-yandex_vpc_subnet.subnet1: Destroying... [id=e9bd1stlmceo035b096b]
-yandex_vpc_subnet.subnet2: Destroying... [id=e2lnfa473f80ijafh9j2]
-yandex_storage_bucket.kabaev-bucket: Destroying... [id=kabaev-bucket]
-yandex_vpc_subnet.subnet3: Destroying... [id=b0c72fvreepj6pthrhoq]
-yandex_vpc_subnet.subnet3: Destruction complete after 0s
-yandex_vpc_subnet.subnet1: Destruction complete after 1s
-yandex_vpc_subnet.subnet2: Destruction complete after 2s
-yandex_vpc_network.network: Destroying... [id=enph4jbqnppnloadrbdl]
-yandex_vpc_network.network: Destruction complete after 0s
-yandex_storage_bucket.kabaev-bucket: Still destroying... [id=kabaev-bucket, 10s elapsed]
-yandex_storage_bucket.kabaev-bucket: Destruction complete after 11s
-yandex_kms_symmetric_key.kms: Destroying... [id=abjmho1mbend1k1usgum]
-yandex_iam_service_account_static_access_key.sa-static-key: Destroying... [id=aje94pcfprdpnodi3t5t]
-yandex_iam_service_account_static_access_key.sa-static-key: Destruction complete after 0s
-yandex_kms_symmetric_key.kms: Destruction complete after 0s
 
-Destroy complete! Resources: 7 destroyed.
+Changes to Outputs:
+  - access_key = (sensitive value) -> null
+  - secret_key = (sensitive value) -> null
+
+Do you really want to destroy all resources?
+  Terraform will destroy all your managed infrastructure, as shown above.
+  There is no undo. Only 'yes' will be accepted to confirm.
+
 ````
 
 ## 2. Создание Kubernetes кластера
