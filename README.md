@@ -419,3 +419,5 @@ statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     
 ![grafana3](https://github.com/Atlipoka/app/blob/main/screen/grafana3.png)
 
 ## 4. Создание CI/CD для нашего проекта.
+
+### Проверка работы веб-хука
