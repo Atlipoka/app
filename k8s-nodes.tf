@@ -1,11 +1,12 @@
 resource "yandex_kubernetes_node_group" "pods_group" {
   cluster_id = yandex_kubernetes_cluster.k8s-regional.id
-  name       = "netology"
+  name       = "worker-nodes"
   version    = "1.27"
 
 
   instance_template {
     platform_id = "standard-v3"
+    name = "node-{instance.index}"
 
     metadata = {
       ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"

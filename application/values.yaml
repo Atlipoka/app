@@ -15,7 +15,7 @@ service:
 spec:
   containers:
   - name: nginx
-    image: cr.yandex/crptaeplaib6guq8qlrh/app:1.0.0
+    image: cr.yandex/crp21den4acedluvr123/app:1.0.0
     ports:
     - containerPort: 80
       name: http-port
