@@ -420,4 +420,9 @@ statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     
 
 ## 4. Создание CI/CD для нашего проекта.
 
-### Проверка работы скриптовог
+### Проверка работы скриптового
+
+ваыаыававаыва
+аыв
+авы
+ав
