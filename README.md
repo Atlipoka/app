@@ -422,12 +422,3 @@ statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     
 
 ### Проверка работы скриптового fgfgfdgfdgdf
 vvcvxcv
-xcvxc
-vvbcvbvcb
-vcb
-cvb
-vcb
-vcb
-vcb
-cvb
-vc
