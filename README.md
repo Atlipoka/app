@@ -436,4 +436,20 @@ statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     
   * 
  * Проверяем работу веб-хуков.
   * Заходим в репозиторий и меням любой файл, не ставим тэг и смотрим, какие задания отработают и привильно ли они вообще работают.
+  * пвапавп
+  * Теперь проверям текущий образ в кластере k8s, меняем что нам необходимо в остлеживаемых гитом файле, ставим необходимый тэг и коммитим в репозиторий.
+```
+vagrant@vagrant:~$ kubectl describe deployment.apps/nginx -n application
+...
+    Pod Template:
+  Labels:  app=nginx
+  Containers:
+   nginx:
+    Image:        cr.yandex/crph3q06fo23v71rfm6a/app:1.0.23
+    Ports:        80/TCP, 443/TCP
+    Host Ports:   0/TCP, 0/TCP
+...
+
+
+```
   * 
