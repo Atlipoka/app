@@ -430,13 +430,14 @@ statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     
 4. Затем проверяем работу и получаем следующий результат:
  * Доступ по http до jenkins и два созданных задания ``Build and push image in registry at every commit
 `` и ``Build, push image in registry and set new image in kubernetes cluster with label at every commit with tag``
+  * ![jenkins-web](https://github.com/Atlipoka/app/blob/main/screen/web.png)
  * Настраиваем веб-хуки для нашего репозитория в Git-hub
   * http://158.160.109.106:8080/github-webhook/ - для срабатывания при каждом любом коммите в репозиторий
   * http://158.160.109.106:8080/multibranch-webhook-trigger/invoke?token=ScanTags - для срабатывания в случае создания нового тэга
-  * 
+  * ![web-hooks](https://github.com/Atlipoka/app/blob/main/screen/hooks.png)
  * Проверяем работу веб-хуков.
   * Заходим в репозиторий и меням любой файл, не ставим тэг и смотрим, какие задания отработают и привильно ли они вообще работают.
-  * пвапавп
+  * ![jenkins-task1](https://github.com/Atlipoka/app/blob/main/screen/task1.png)
   * Теперь проверям текущий образ в кластере k8s, меняем что нам необходимо в остлеживаемых гитом файле, ставим необходимый тэг и коммитим в репозиторий.
 ```
 vagrant@vagrant:~$ kubectl describe deployment.apps/nginx -n application
@@ -480,4 +481,4 @@ Pod Template:
     Host Ports:   0/TCP, 0/TCP
 ...
 ```
-  * 
+  * ![jenkins-task2](https://github.com/Atlipoka/app/blob/main/screen/task2.png)
