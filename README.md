@@ -450,7 +450,34 @@ vagrant@vagrant:~$ kubectl describe deployment.apps/nginx -n application
     Host Ports:   0/TCP, 0/TCP
 ...
 
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ nano README.md
+...
 test with tag
+...
 
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ git tag 1.0.24
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ git commit -a -m "Testing how to working webhooks and tags in Jenkins"
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ git push origin HEAD 1.0.24
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 1021 bytes | 340.00 KiB/s, done.
+Total 3 (delta 2), reused 0 (delta 0)
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To github.com:Atlipoka/app.git
+   a862975..4c34b30  HEAD -> main
+ * [new tag]         1.0.24 -> 1.0.24
+
+vagrant@vagrant:~/Netology_homeworks/Cloud/Diploma$ kubectl describe deployment.apps/nginx -n application
+...
+Pod Template:
+  Labels:  app=nginx
+  Containers:
+   nginx:
+    Image:        cr.yandex/crph3q06fo23v71rfm6a/app:1.0.24
+    Ports:        80/TCP, 443/TCP
+    Host Ports:   0/TCP, 0/TCP
+...
 ```
   * 
