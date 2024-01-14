@@ -423,6 +423,17 @@ statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     
 В роли иструмента был выбран Jenkis, не могу объяснить, почему именно он, видимо, он показался мне более привлекательным тогда, когда я впервые познакомился с инструментами CI/CD. Вариант реализации Jenkins сначала пал на k8s, развернуть внутри уже имеющего кластера и жить спокойно...но возникли трудности с докером. Возможно, мне просто не хватило терпения, которого я потратил кучу когда пытался настроить обратный прокси для Jenkins и уже не охота было возиться с запуском докера в докере. Поэтому, развернул отдельную виртуалку, засетапил ансиблом Jenkins и поехали...
 
 1. Разворачиваем виртуалку с помощью ``jenkins-master.tf`` и сетапим на нее все необходимое с помощью ансибла, скрипт находится в папке ``setup-vm/``.
-2. Далее настраиваем Jenkins, попадаем на веб по внешнему адресу и производим превоначальную установку, затем ставим необходимы доп. плагины.
-3. Создаем скриптовый пайплай для сборки о отправки образа в регисти ``build_push.Jenkinsfile`` и в случае, если мы добавляем тэг, то дополнительно обновляем образ нашего приложения в кубере используя скрипт ``set_image.Jenkinsfile``.
+2. Далее настраиваем Jenkins, попадаем на веб по внешнему адресу и производим превоначальную установку, затем ставим необходимы доп. плагины ``Kubernetes plugin`` и ``Multibranch Scan Webhook Trigger``.
+3. Создаем два задания ``Build and push image in registry at every commit
+`` и ``Build, push image in registry and set new image in kubernetes cluster with label at every commit with tag``, по названию понятно, как оно рабоает. Для каждого задания создаем криптовый пайплай для первого задания ``Build and push image in registry at every commit
+`` - ``build_push.Jenkinsfile`` и для вторго ``Build, push image in registry and set new image in kubernetes cluster with label at every commit with tag`` -  ``set_image.Jenkinsfile``.
 4. Затем проверяем работу и получаем следующий результат:
+ * Доступ по http до jenkins и два созданных задания ``Build and push image in registry at every commit
+`` и ``Build, push image in registry and set new image in kubernetes cluster with label at every commit with tag``
+ * Настраиваем веб-хуки для нашего репозитория в Git-hub
+  * http://158.160.109.106:8080/github-webhook/ - для срабатывания при каждом любом коммите в репозиторий
+  * http://158.160.109.106:8080/multibranch-webhook-trigger/invoke?token=ScanTags - для срабатывания в случае создания нового тэга
+  * 
+ * Проверяем работу веб-хуков.
+  * Заходим в репозиторий и меням любой файл, не ставим тэг и смотрим, какие задания отработают и привильно ли они вообще работают.
+  * 
