@@ -482,4 +482,3 @@ Pod Template:
 ...
 ```
   * ![jenkins-task2](https://github.com/Atlipoka/app/blob/main/screen/task2.png)
-  * dsfdsfdsfdsfdf
