@@ -432,8 +432,8 @@ statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     
 `` и ``Build, push image in registry and set new image in kubernetes cluster with label at every commit with tag``
   * ![jenkins-web](https://github.com/Atlipoka/app/blob/main/screen/web.png)
  * Настраиваем веб-хуки для нашего репозитория в GitHub
-  * http://158.160.109.106:8080/github-webhook/ - для срабатывания при каждом любом коммите в репозиторий
-  * http://158.160.109.106:8080/multibranch-webhook-trigger/invoke?token=ScanTags - для срабатывания в случае создания нового тэга
+  * http://158.160.109.106:8080/github-webhook/ - для срабатывания при любом коммите в репозиторий.
+  * http://158.160.109.106:8080/multibranch-webhook-trigger/invoke?token=ScanTags - для срабатывания в случае создания нового тэга.
   * ![web-hooks](https://github.com/Atlipoka/app/blob/main/screen/hooks.png)
  * Проверяем работу веб-хуков.
   * Заходим в репозиторий и меням любой файл, не ставим тэг и смотрим, какие задания отработают и привильно ли они вообще работают.
