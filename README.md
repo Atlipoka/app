@@ -425,13 +425,13 @@ statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus       1/1     
 1. Разворачиваем виртуалку с помощью ``jenkins-master.tf`` и сетапим на нее все необходимое с помощью ансибла, скрипт находится в папке ``setup-vm/``.
 2. Далее настраиваем Jenkins, попадаем на веб по внешнему адресу и производим превоначальную установку, затем ставим необходимы доп. плагины ``Kubernetes plugin`` и ``Multibranch Scan Webhook Trigger``.
 3. Создаем два задания ``Build and push image in registry at every commit
-`` и ``Build, push image in registry and set new image in kubernetes cluster with label at every commit with tag``, по названию понятно, как оно рабоает. Для каждого задания создаем криптовый пайплай для первого задания ``Build and push image in registry at every commit
+`` и ``Build, push image in registry and set new image in kubernetes cluster with label at every commit with tag``, по названию понятно, как оно рабоает. Для каждого задания создаем криптовый пайплай, для первого задания ``Build and push image in registry at every commit
 `` - ``build_push.Jenkinsfile`` и для вторго ``Build, push image in registry and set new image in kubernetes cluster with label at every commit with tag`` -  ``set_image.Jenkinsfile``.
 4. Затем проверяем работу и получаем следующий результат:
  * Доступ по http до jenkins и два созданных задания ``Build and push image in registry at every commit
 `` и ``Build, push image in registry and set new image in kubernetes cluster with label at every commit with tag``
   * ![jenkins-web](https://github.com/Atlipoka/app/blob/main/screen/web.png)
- * Настраиваем веб-хуки для нашего репозитория в Git-hub
+ * Настраиваем веб-хуки для нашего репозитория в GitHub
   * http://158.160.109.106:8080/github-webhook/ - для срабатывания при каждом любом коммите в репозиторий
   * http://158.160.109.106:8080/multibranch-webhook-trigger/invoke?token=ScanTags - для срабатывания в случае создания нового тэга
   * ![web-hooks](https://github.com/Atlipoka/app/blob/main/screen/hooks.png)
